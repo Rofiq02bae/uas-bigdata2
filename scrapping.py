@@ -131,5 +131,9 @@ with tab3:
     - Gunakan **model sentimen machine learning** (BERT, Naive Bayes, dll) untuk klasifikasi otomatis.
     - Tambahkan filter **berdasarkan tanggal** atau fitur pencarian kata kunci.
     - Simpan histori scraping ke database untuk analisis tren jangka panjang.
+
+    ### ini link doksli collab nya sama datanya
+    - https://colab.research.google.com/drive/1ocRwE3_dhPlxWh_FHwHEp8l-FYZGIoVe?usp=sharing
+    - github = https://github.com/Rofiq02bae/uas-bigdata2.git
     """)
 
