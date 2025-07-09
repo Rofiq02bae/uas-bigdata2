@@ -1,4 +1,4 @@
-# !pip install google-play-scraper streamlit wordcloud nltk seaborn matplotlib pandas numpy
+# !pip install google-play-scraper streamlit wordcloud nltk seaborn matplotlib pandas numpy plotly
 
 from google_play_scraper import Sort, reviews
 import pandas as pd
@@ -11,6 +11,7 @@ from wordcloud import WordCloud
 import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
+import plotly.express as px
 
 nltk.download('stopwords')
 
@@ -46,6 +47,7 @@ df['content'] = df['content'].astype(str)
 df['CaseFolding'] = df['content'].str.lower()
 
 stop_words = set(stopwords.words('indonesian') + ['yg', 'dg', 'rt'])
+
 def clean_text(text):
     words = text.split()
     filtered = [w for w in words if w not in stop_words]
@@ -70,8 +72,22 @@ tab1, tab2, tab3 = st.tabs(["📊 Dashboard", "🗂️ Data Ulasan", "📝 Kesim
 with tab1:
     st.title("📱 Dashboard Analisis Ulasan Shopee")
 
-    st.subheader("Distribusi Sentimen")
-    st.bar_chart(df['Sentimen'].value_counts())
+    st.subheader("Distribusi Sentimen (Interaktif)")
+    sentimen_counts = df['Sentimen'].value_counts().reset_index()
+    sentimen_counts.columns = ['Sentimen', 'Jumlah']
+    fig_sentimen = px.bar(
+        sentimen_counts,
+        x='Sentimen',
+        y='Jumlah',
+        color='Sentimen',
+        color_discrete_map={
+            'Positif': '#0074D9',
+            'Netral': '#AAAAAA',
+            'Negatif': '#FF4136'
+        },
+        title="Distribusi Sentimen Pengguna"
+    )
+    st.plotly_chart(fig_sentimen, use_container_width=True)
 
     st.subheader("Wordcloud dari Ulasan (Tanpa Stopwords)")
     all_text = " ".join(df['CleanedText'].dropna())
@@ -82,12 +98,20 @@ with tab1:
     st.pyplot(fig)
 
     st.subheader("20 Kata Paling Umum dalam Ulasan")
-    words = " ".join(df['CleanedText']).split()
+    words = all_text.split()
     most_common = Counter(words).most_common(20)
     common_df = pd.DataFrame(most_common, columns=['Kata', 'Frekuensi'])
-    fig2, ax2 = plt.subplots()
-    sns.barplot(data=common_df, x='Frekuensi', y='Kata', ax=ax2)
-    st.pyplot(fig2)
+    fig_kata = px.bar(
+        common_df,
+        x='Frekuensi',
+        y='Kata',
+        orientation='h',
+        color='Frekuensi',
+        color_continuous_scale='Plasma',
+        title="20 Kata Paling Umum dalam Ulasan"
+    )
+    fig_kata.update_layout(yaxis={'categoryorder':'total ascending'})
+    st.plotly_chart(fig_kata, use_container_width=True)
 
 # ===================== TAB 2: DATA ULASAN =====================
 with tab2:
@@ -132,8 +156,7 @@ with tab3:
     - Tambahkan filter **berdasarkan tanggal** atau fitur pencarian kata kunci.
     - Simpan histori scraping ke database untuk analisis tren jangka panjang.
 
-    ### ini link doksli collab nya sama datanya
-    - https://colab.research.google.com/drive/1ocRwE3_dhPlxWh_FHwHEp8l-FYZGIoVe?usp=sharing
-    - github = https://github.com/Rofiq02bae/uas-bigdata2.git
+    ### 🔗 Referensi:
+    - [Google Colab Notebook](https://colab.research.google.com/drive/1ocRwE3_dhPlxWh_FHwHEp8l-FYZGIoVe?usp=sharing)
+    - [GitHub Repository](https://github.com/Rofiq02bae/uas-bigdata2)
     """)
-
